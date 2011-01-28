@@ -1,0 +1,167 @@
+<html>
+<head>
+</head>
+<style type="text/css">
+@import "jquery.svg.css";
+
+#canvas { width: 1200px; height: 500px; border: 1px solid #484; }
+</style>
+<!--<script type='text/javascript' src='jquery-1.4.4.js'></script>-->
+<script type='text/javascript' src='jquery-svgdom/jquery-1.4.2.js'></script>
+<script type="text/javascript" src="jquery.svg.js"></script>
+<script type="text/javascript" src="jquery.svgdom.js"></script>
+<script type="text/javascript" src="jquery.svganim.js"></script>
+<script type='text/javascript'>
+if (typeof(console)=='undefined') console = {log: function() {} };
+
+var svg = null;
+var scl = ''; //translate(200.67894,-1104.2838)';
+var riverflow=0;
+var bofx = 141.91188,bofy=-1317.0121;
+var svroot = null;
+var donecb = function(sv,err) {
+
+    //svg = sv;
+    svroot = sv;
+
+    //sv.text('hi there',150,400);
+    var tr = $('#tree',svroot);
+    var tr2 = $('#tree2',svroot);    
+    var tr3 = $('#tree3',svroot);
+    var rt = $('g:first',svroot);
+    var cl = $('#clouds',svroot);
+
+    var rp = $('#riverpath',svroot);
+    
+    //console.log('donecb %o. tree: %o root: %o',sv.root(),tr,rt);
+    //tr[0].setAttribute('transform','scale(' + 1 + ')');
+    //tr[0].setAttribute('transform','translate(1 1)');
+    //rt[0].setAttribute('transform','scale(0.1)');
+    //rt[0].setAttribute('transform','translate(0, 0)'); 
+    if (scl) rt[0].setAttribute('transform',scl);
+
+
+    /*var p1 = $('#bird1')[0].getAttribute('d').split(' ');
+    var p2 = $('#bird2')[0].getAttribute('d').split(' ');
+    console.log("%o <> %o (%o,%o)",p1.length,p2.length,p1,p2);*/
+
+    var clanim = function() {
+	//cl[0].setAttribute('transform','translate(-800,0)');
+	//cl[0].setAttribute('transform','matrix(0.4,0,0,0.4,209.08746,871.12154)​');
+	//return;
+
+	cl.animate({svgTransform:'translate(2400,0)'},50000,function() { clanim(); } );
+
+    }
+
+
+    $('#riverlog',svroot).css('color','red');
+    
+    //console.log("%o , %o",svroot,$('#tree',svroot)); return;
+    var pathbx = $('#riverpath',svroot)[0].getBBox();
+    var logbx =  $('#riverlog',svroot)[0].getBBox();
+    var xdiff = logbx.x - pathbx.x + bofx;
+    var ydiff = logbx.y - pathbx.y + bofy;
+    console.log("diff between path and log is %o,%o (%o,%o)",xdiff,ydiff,pathbx,logbx);
+
+    clanim();
+
+    //svg.rect(pathbx.x,pathbx.y,pathbx.width,pathbx.height);
+    //console.log(svg.rect(logbx.x,logbx.y,logbx.width,logbx.height));
+
+    var riveranim = function() {
+
+	rp[0].style.display='none';
+	$('#riverlog',svroot)[0].style.display='';
+	var pt = rp[0].getPointAtLength(riverflow++);
+	//return;
+	var sattr='scale(1),translate('+(pt.x-605)+','+(pt.y-230)+')';
+	$('#riverlog',svroot)[0].setAttribute('transform',sattr);
+	//console.log(sattr);
+
+	if (riverflow>=300) 
+	    {
+		$('#riverlog',svroot)[0].setAttribute('transform','');
+		$('#riverlog',svroot)[0].style.display='none';
+		riverflow=0;
+		window.setTimeout(riveranim,1000);
+	    }
+	else
+	    window.setTimeout(riveranim,30);
+	
+    }
+    riveranim();
+    
+    var treeev = function(ev) {
+	var tre = $(ev.target).closest('g');
+	console.log('tree is %o',tre);
+	var bbx = tre[0].getBBox(); //getAttribute('transform'));
+	//tr[0].setAttribute('transform','scale(0.5)');
+	//337.39,
+	console.log(bbx);
+
+	/*var rct = svg.rect(bbx.x,bbx.y,bbx.width,bbx.height,10, 10, {fill: 'yellow', stroke: 'navy', strokeWidth: 5});
+	rct.setAttribute('transform',scl);
+	console.log(rct);*/
+
+	/*var trto = 'translate('+bbx.left+','+(bbx.top-50)+')';
+	  var trfr = 'translate('+bbx.left+','+(bbx.top)+')';*/
+	var trto = 'translate(0,10)';
+	  var trfr = 'translate(0,0)';
+	console.log('animating %o and %o',trto,trfr);
+
+	tre.animate({svgTransform:trto},200).animate({svgTransform:trfr},200);
+	    /*tr.find('path').each(function(elp,el) {
+		    el.setAttribute('transform','scale(0.5)');
+		    console.log('animating %o',el);
+		    //$(el).animate({svgHeight:'50%'},200);
+		    
+		    });*/
+
+	}
+
+
+    $(tr).bind('mouseover',treeev);
+    $(tr2).bind('mouseover',treeev);
+    $(tr3).bind('mouseover',treeev);
+
+    
+    var b1p = $('#bird1',svroot).attr('d')
+    var b1a = $('#bird1 animate',svroot).attr('values');
+
+
+
+    
+    cl.bind('click',function(ev) {
+
+	    $('#cloud-bg',svroot)[0].style.fill='#ddd';
+	    if ($('#cloud-bg',svroot)[0].style.opacity==0)
+		$('#cloud-bg',svroot)[0].style.opacity=1;
+	    else
+		$('#cloud-bg',svroot)[0].style.opacity=0;
+	});
+    console.log(cl);
+}
+$(function() {
+
+	$('#emb').svg({onLoad:function(sv) {
+		    svg = sv;
+		    console.log('loaded %o',sv);
+		    document.getElementById('emb').addEventListener('load', function() { 
+			    donecb(document.getElementById('emb').getSVGDocument());
+			},null);
+		    }});
+
+
+	/*svg = $('#canvas').svg({onLoad:function(svg) {
+	    svg.load('drawing.svg',{addTo:true,onLoad:donecb});
+	    }});*/
+});
+</script>
+<body>
+<!--<object id='canvas' style='width:100%;height:100%;' type="image/svg+xml" data="drawing.svg"></object>-->
+    <embed id='emb' src='drawing.svg' type='image/svg+xml' style='width:100%;height:400px'>
+<div id='canvas'></div>
+</embed>
+</body>
+</html>

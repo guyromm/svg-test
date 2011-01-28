@@ -1,0 +1,23 @@
+<svg viewBox="7 -2 110 110" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<defs>
+		<marker id="m" markerWidth="1.25" markerHeight="1.25" markerUnits="strokeWidth" viewBox="0 0 10 10" refX="5" refY="5">
+			<circle cx="5" cy="5" r="5" fill="rgb(247, 171, 21)"/>
+		</marker>
+		<marker id="m2" markerWidth="1.25" markerHeight="1.25" markerUnits="strokeWidth" viewBox="0 0 10 10" refX="5" refY="5">
+			<circle cx="5" cy="5" r="5" fill="black"/>
+		</marker>
+	</defs>
+	<g id="logo" stroke-width="10" color="rgb(247, 171, 21)" marker-start="url(#m)" marker-end="url(#m)">
+		<use xlink:href="#g" stroke-width="15" color="black" marker-start="url(#m2)" marker-end="url(#m2)"/>
+		<g id="g" 	stroke="currentColor">
+			<line x1="20" y1="50" x2="80" y2="50"/>
+			<line x1="50" x2="50" y1="20" y2="80"/>
+			<line transform="rotate(45 50 50)" x1="20" y1="50" x2="80" y2="50"/>
+			<line transform="rotate(135 50 50)" x1="20" y1="50" x2="80" y2="50"/>
+		</g>
+	</g>
+	<g stroke-width="3" fill="rgb(247, 171, 21)" stroke="black" transform="translate(4 0)">
+		<rect x="93.5" y="15" width="13" height="50" rx="5"/>
+		<circle cx="100" cy="78" r="7.5"/>
+	</g>
+</svg>
